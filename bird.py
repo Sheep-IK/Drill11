@@ -41,105 +41,88 @@ def time_out(e):
 # time_out = lambda e : e[0] == 'TIME_OUT'
 
 
-
-
-# Boy Run Speed
-# fill here
-
-# Boy Action Speed
-# fill here
-
-
-
-
-
-
-
-
-
-
 class Idle:
 
     @staticmethod
-    def enter(boy, e):
-        if boy.face_dir == -1:
-            boy.action = 2
-        elif boy.face_dir == 1:
-            boy.action = 3
-        boy.dir = 0
-        boy.frame = 0
-        boy.wait_time = get_time() # pico2d import 필요
+    def enter(bird, e):
+        if bird.face_dir == -1:
+            bird.action = 2
+        elif bird.face_dir == 1:
+            bird.action = 3
+        bird.dir = 0
+        bird.frame = 0
+        bird.wait_time = get_time() # pico2d import 필요
         pass
 
     @staticmethod
-    def exit(boy, e):
+    def exit(bird, e):
         if space_down(e):
-            boy.fire_ball()
+            bird.fire_ball()
         pass
 
     @staticmethod
-    def do(boy):
-        boy.frame = (boy.frame + 1) % 8
-        boy.x += boy.dir * RUN_SPEED_PPS * game_framework.frame_time
+    def do(bird):
+        bird.frame = (bird.frame + 1) % 5
+        bird.x += bird.dir * RUN_SPEED_PPS * game_framework.frame_time
 
     @staticmethod
-    def draw(boy):
-        boy.image.clip_draw(boy.frame * 100, boy.action * 100, 100, 100, boy.x, boy.y)
+    def draw(bird):
+        bird.image.clip_draw(bird.frame * 90, bird.action * 90, 90, 90, bird.x, bird.y)
 
 
 
 class Run:
 
     @staticmethod
-    def enter(boy, e):
+    def enter(bird, e):
         if right_down(e) or left_up(e): # 오른쪽으로 RUN
-            boy.dir, boy.action, boy.face_dir = 1, 1, 1
+            bird.dir, bird.action, bird.face_dir = 1, 1, 1
         elif left_down(e) or right_up(e): # 왼쪽으로 RUN
-            boy.dir, boy.action, boy.face_dir = -1, 0, -1
+            bird.dir, bird.action, bird.face_dir = -1, 0, -1
 
     @staticmethod
-    def exit(boy, e):
-        if space_down(e):
-            boy.fire_ball()
-
+    def exit(bird, e):
+        #   if space_down(e):
+        #    bird.fire_ball()
         pass
 
     @staticmethod
-    def do(boy):
-        boy.frame = (boy.frame + 1) % 8
-        boy.x += boy.dir * RUN_SPEED_PPS * game_framework.frame_time
+    def do(bird):
+        bird.frame = (bird.frame + 1) % 5
+        bird.x += bird.dir * RUN_SPEED_PPS * game_framework.frame_time
 
     @staticmethod
-    def draw(boy):
-        boy.image.clip_draw(boy.frame * 100, boy.action * 100, 100, 100, boy.x, boy.y)
+    def draw(bird):
+        bird.image.clip_draw(bird.frame * 90, bird.action * 90, 90, 90, bird.x, bird.y)
 
 
 
 class Sleep:
 
     @staticmethod
-    def enter(boy, e):
-        boy.frame = 0
+    def enter(bird, e):
+        bird.frame = 0
         pass
 
     @staticmethod
-    def exit(boy, e):
+    def exit(bird, e):
         pass
 
 
     @staticmethod
-    def do(boy):
-        boy.frame = (boy.frame + 1) % 8
-        boy.x += boy.dir * RUN_SPEED_PPS * game_framework.frame_time
+    @staticmethod
+    def do(bird):
+        bird.frame = (bird.frame + 1) % 5
+        bird.x += bird.dir * RUN_SPEED_PPS * game_framework.frame_time
 
     @staticmethod
-    def draw(boy):
-        boy.image.clip_draw(boy.frame * 100, boy.action * 100, 100, 100, boy.x, boy.y)
+    def draw(bird):
+        bird.image.clip_draw(bird.frame * 90, bird.action * 90, 90, 90, bird.x, bird.y)
 
 
 class StateMachine:
-    def __init__(self, boy):
-        self.boy = boy
+    def __init__(self, bird):
+        self.bird = bird
         self.cur_state = Idle
         self.transitions = {
             Idle: {right_down: Run, left_down: Run, left_up: Run, right_up: Run, time_out: Sleep, space_down: Idle},
@@ -148,29 +131,29 @@ class StateMachine:
         }
 
     def start(self):
-        self.cur_state.enter(self.boy, ('NONE', 0))
+        self.cur_state.enter(self.bird, ('NONE', 0))
 
     def update(self):
-        self.cur_state.do(self.boy)
+        self.cur_state.do(self.bird)
 
     def handle_event(self, e):
         for check_event, next_state in self.transitions[self.cur_state].items():
             if check_event(e):
-                self.cur_state.exit(self.boy, e)
+                self.cur_state.exit(self.bird, e)
                 self.cur_state = next_state
-                self.cur_state.enter(self.boy, e)
+                self.cur_state.enter(self.bird, e)
                 return True
 
         return False
 
     def draw(self):
-        self.cur_state.draw(self.boy)
+        self.cur_state.draw(self.bird)
 
 
 
 
 
-class Boy:
+class bird:
     def __init__(self):
         self.x, self.y = 400, 90
         self.frame = 0
@@ -184,14 +167,15 @@ class Boy:
         self.font = load_font('ENCR10B.TTF', 16)
 
 
+
     def fire_ball(self):
 
-        if self.item ==   'Ball':
-            ball = Ball(self.x, self.y, self.face_dir*10)
-            game_world.add_object(ball)
-        elif self.item == 'BigBall':
-            ball = BigBall(self.x, self.y, self.face_dir*10)
-            game_world.add_object(ball)
+        #if self.item ==   'Ball':
+        #    ball = Ball(self.x, self.y, self.face_dir*10)
+        #    game_world.add_object(ball)
+        #elif self.item == 'BigBall':
+        #    ball = BigBall(self.x, self.y, self.face_dir*10)
+        #    game_world.add_object(ball)
         # if self.face_dir == -1:
         #     print('FIRE BALL LEFT')
         #
